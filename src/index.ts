@@ -42,6 +42,7 @@ async function generateCodeTour(
   const diffLines = diff.split('\n');
   let currentFile = '';
   let currentLine = 0;
+  let changeStartLine = 0;
   let addedLines: string[] = [];
   let deletedLines: string[] = [];
   let inHunk = false;
@@ -56,7 +57,7 @@ async function generateCodeTour(
         const description = generateStepDescription(addedLines, deletedLines);
         steps.push({
           file: currentFile,
-          line: currentLine > 0 ? currentLine : 1,
+          line: changeStartLine > 0 ? changeStartLine : 1,
           description,
         });
       }
@@ -69,6 +70,7 @@ async function generateCodeTour(
       addedLines = [];
       deletedLines = [];
       currentLine = 0;
+      changeStartLine = 0;
       inHunk = false;
     }
 
@@ -79,7 +81,7 @@ async function generateCodeTour(
         const description = generateStepDescription(addedLines, deletedLines);
         steps.push({
           file: currentFile,
-          line: currentLine > 0 ? currentLine : 1,
+          line: changeStartLine > 0 ? changeStartLine : 1,
           description,
         });
         addedLines = [];
@@ -90,6 +92,7 @@ async function generateCodeTour(
       if (match) {
         currentLine = parseInt(match[2], 10);
       }
+      changeStartLine = 0;
       inHunk = true;
       continue;
     }
@@ -97,20 +100,29 @@ async function generateCodeTour(
     // Parse changes in hunk
     if (inHunk) {
       if (line.startsWith('+') && !line.startsWith('+++')) {
+        if (changeStartLine === 0) {
+          changeStartLine = currentLine;
+        }
         addedLines.push(line.substring(1));
+        currentLine++;
       } else if (line.startsWith('-') && !line.startsWith('---')) {
+        if (changeStartLine === 0) {
+          changeStartLine = currentLine;
+        }
         deletedLines.push(line.substring(1));
+        // Don't increment currentLine for deletions
       } else if (!line.startsWith('\\')) {
         // Context line, save current changes if any
         if (addedLines.length > 0 || deletedLines.length > 0) {
           const description = generateStepDescription(addedLines, deletedLines);
           steps.push({
             file: currentFile,
-            line: currentLine,
+            line: changeStartLine > 0 ? changeStartLine : currentLine,
             description,
           });
           addedLines = [];
           deletedLines = [];
+          changeStartLine = 0;
         }
         currentLine++;
       }
@@ -122,7 +134,7 @@ async function generateCodeTour(
     const description = generateStepDescription(addedLines, deletedLines);
     steps.push({
       file: currentFile,
-      line: currentLine > 0 ? currentLine : 1,
+      line: changeStartLine > 0 ? changeStartLine : 1,
       description,
     });
   }
