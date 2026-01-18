@@ -1,0 +1,16 @@
+{
+  "title": "Simple Addition Test",
+  "description": "Test case for adding a new file",
+  "steps": [
+    {
+      "description": "Create an empty file:\n\n>> node -e \"require('fs').writeFileSync('example.js', '')\"",
+      "title": "Create example.js"
+    },
+    {
+      "file": "example.js",
+      "line": 1,
+      "description": "Add the following content:\n\n```javascript\nfunction hello() {\n  console.log(\"Hello, world!\");\n}\n\nhello();\n```",
+      "title": "Add content to example.js"
+    }
+  ]
+}

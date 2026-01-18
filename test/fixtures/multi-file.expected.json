@@ -1,0 +1,39 @@
+{
+  "title": "Multi-File Test",
+  "description": "Test case for changes across multiple files",
+  "steps": [
+    {
+      "file": "README.md",
+      "description": "Replace with:\n\n```markdown\nThis is an amazing project with lots of features!\n\nCheck out the documentation for more details.\n```",
+      "selection": {
+        "start": {
+          "line": 3,
+          "character": 1
+        },
+        "end": {
+          "line": 3,
+          "character": 26
+        }
+      }
+    },
+    {
+      "file": "src/main.js",
+      "line": 3,
+      "description": "Add:\n\n```javascript\n// Start the server\n```"
+    },
+    {
+      "file": "src/main.js",
+      "description": "Replace with:\n\n```javascript\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n```",
+      "selection": {
+        "start": {
+          "line": 5,
+          "character": 1
+        },
+        "end": {
+          "line": 5,
+          "character": 18
+        }
+      }
+    }
+  ]
+}

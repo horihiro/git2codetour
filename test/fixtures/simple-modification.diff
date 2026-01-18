@@ -1,0 +1,11 @@
+diff --git a/app.js b/app.js
+index abc1234..def5678 100644
+--- a/app.js
++++ b/app.js
+@@ -1,5 +1,5 @@
+ function greet(name) {
+-  console.log("Hello, " + name);
++  console.log(`Hello, ${name}!`);
+ }
+ 
+ greet("World");

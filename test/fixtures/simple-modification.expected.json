@@ -1,0 +1,20 @@
+{
+  "title": "Simple Modification Test",
+  "description": "Test case for modifying a single line",
+  "steps": [
+    {
+      "file": "app.js",
+      "description": "Replace with:\n\n```javascript\n  console.log(`Hello, ${name}!`);\n```",
+      "selection": {
+        "start": {
+          "line": 2,
+          "character": 1
+        },
+        "end": {
+          "line": 2,
+          "character": 33
+        }
+      }
+    }
+  ]
+}
