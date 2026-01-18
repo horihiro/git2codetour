@@ -1,0 +1,25 @@
+{
+  "name": "git2codetour",
+  "version": "1.0.0",
+  "description": "Command-line tool to generate CodeTour from git commit diffs",
+  "main": "dist/index.js",
+  "bin": {
+    "git2codetour": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["git", "codetour", "diff", "code-review"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "simple-git": "^3.30.0"
+  }
+}
