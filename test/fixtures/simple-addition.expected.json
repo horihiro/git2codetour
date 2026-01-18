@@ -3,7 +3,7 @@
   "description": "Test case for adding a new file",
   "steps": [
     {
-      "description": "Create an empty file:\n\n>> echo > example.js",
+      "description": "Create an empty file:\n\n>> node -e \"require('fs').writeFileSync('example.js', '')\"",
       "title": "Create example.js"
     },
     {

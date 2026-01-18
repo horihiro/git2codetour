@@ -170,7 +170,7 @@ function createSteps(
     
     // Step 1: Create empty file
     steps.push({
-      description: `Create an empty file:\n\n>> echo > ${fileName}`,
+      description: `Create an empty file:\n\n>> node -e "require('fs').writeFileSync('${fileName}', '')"`,
       title: `Create ${fileName}`,
     });
     
