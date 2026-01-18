@@ -34,7 +34,6 @@ async function generateCodeTour(
   }
 
   // Get the diff between commits
-  const diffSummary = await git.diffSummary([fromCommit, toCommit]);
   const diff = await git.diff([fromCommit, toCommit]);
 
   const steps: CodeTourStep[] = [];
@@ -132,9 +131,12 @@ async function generateCodeTour(
   const fromCommitLog = await git.log([fromCommit, '-1']);
   const toCommitLog = await git.log([toCommit, '-1']);
 
+  const fromHash = fromCommitLog.latest?.hash.substring(0, 7) || fromCommit;
+  const toHash = toCommitLog.latest?.hash.substring(0, 7) || toCommit;
+
   const tour: CodeTour = {
-    title: `Changes from ${fromCommit.substring(0, 7)} to ${toCommit.substring(0, 7)}`,
-    description: `Diff between commits:\n- From: ${fromCommitLog.latest?.hash.substring(0, 7)} - ${fromCommitLog.latest?.message}\n- To: ${toCommitLog.latest?.hash.substring(0, 7)} - ${toCommitLog.latest?.message}`,
+    title: `Changes from ${fromHash} to ${toHash}`,
+    description: `Diff between commits:\n- From: ${fromHash} - ${fromCommitLog.latest?.message}\n- To: ${toHash} - ${toCommitLog.latest?.message}`,
     steps,
   };
 
