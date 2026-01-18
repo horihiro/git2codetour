@@ -1,0 +1,22 @@
+diff --git a/src/utils.py b/src/utils.py
+index 1234567..89abcde 100644
+--- a/src/utils.py
++++ b/src/utils.py
+@@ -1,8 +1,13 @@
+-def add(a, b):
+-    return a + b
++def add(a, b, c=0):
++    """Add two or three numbers together."""
++    return a + b + c
+ 
+ def subtract(a, b):
+     return a - b
+ 
+-def multiply(a, b):
+-    return a * b
++def multiply(*args):
++    """Multiply any number of arguments."""
++    result = 1
++    for num in args:
++        result *= num
++    return result

@@ -1,0 +1,11 @@
+{
+  "title": "Simple Modification Test",
+  "description": "Test case for modifying a single line",
+  "steps": [
+    {
+      "file": "app.js",
+      "line": 2,
+      "description": "**Removed:**\n```javascript\n  console.log(\"Hello, \" + name);\n```\n\n**Added:**\n```javascript\n  console.log(`Hello, ${name}!`);\n```"
+    }
+  ]
+}

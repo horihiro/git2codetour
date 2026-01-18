@@ -1,0 +1,24 @@
+diff --git a/README.md b/README.md
+index abc1234..def5678 100644
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,5 @@
+ # My Project
+ 
+-This is a simple project.
++This is an amazing project with lots of features!
++
++Check out the documentation for more details.
+diff --git a/src/main.js b/src/main.js
+index 1111111..2222222 100644
+--- a/src/main.js
++++ b/src/main.js
+@@ -1,5 +1,8 @@
+ const app = require('./app');
+ 
++// Start the server
+ const PORT = process.env.PORT || 3000;
+-app.listen(PORT);
++app.listen(PORT, () => {
++  console.log(`Server running on port ${PORT}`);
++});

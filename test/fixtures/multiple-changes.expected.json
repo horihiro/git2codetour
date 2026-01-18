@@ -1,0 +1,16 @@
+{
+  "title": "Multiple Changes Test",
+  "description": "Test case for multiple changes in a single file",
+  "steps": [
+    {
+      "file": "src/utils.py",
+      "line": 1,
+      "description": "**Removed:**\n```python\ndef add(a, b):\n    return a + b\n```\n\n**Added:**\n```python\ndef add(a, b, c=0):\n    \"\"\"Add two or three numbers together.\"\"\"\n    return a + b + c\n```"
+    },
+    {
+      "file": "src/utils.py",
+      "line": 8,
+      "description": "**Removed:**\n```python\ndef multiply(a, b):\n    return a * b\n```\n\n**Added:**\n```python\ndef multiply(*args):\n    \"\"\"Multiply any number of arguments.\"\"\"\n    result = 1\n    for num in args:\n        result *= num\n    return result\n```"
+    }
+  ]
+}
