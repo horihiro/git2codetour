@@ -66,8 +66,8 @@ async function generateCodeTour(
     if (line.startsWith('diff --git')) {
       // Save previous file's changes
       if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
-        const step = createStep(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
-        steps.push(step);
+        const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
+        steps.push(...newSteps);
       }
 
       // Reset for new file
@@ -92,8 +92,8 @@ async function generateCodeTour(
     if (line.startsWith('@@')) {
       // Save previous hunk's changes if any
       if (addedLines.length > 0 || deletedLines.length > 0) {
-        const step = createStep(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
-        steps.push(step);
+        const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
+        steps.push(...newSteps);
         addedLines = [];
         deletedLines = [];
       }
@@ -124,8 +124,8 @@ async function generateCodeTour(
       } else if (!line.startsWith('\\')) {
         // Context line, save current changes if any
         if (addedLines.length > 0 || deletedLines.length > 0) {
-          const step = createStep(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : currentLine, isNewFile);
-          steps.push(step);
+          const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : currentLine, isNewFile);
+          steps.push(...newSteps);
           addedLines = [];
           deletedLines = [];
           changeStartLine = 0;
@@ -137,8 +137,8 @@ async function generateCodeTour(
 
   // Save last file's changes
   if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
-    const step = createStep(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : 1, isNewFile);
-    steps.push(step);
+    const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : 1, isNewFile);
+    steps.push(...newSteps);
   }
 
   // Get commit messages for context
@@ -157,21 +157,43 @@ async function generateCodeTour(
   return tour;
 }
 
-function createStep(
+function createSteps(
   addedLines: string[],
   deletedLines: string[],
   fileName: string,
   lineNumber: number,
   isNewFile: boolean
-): CodeTourStep {
+): CodeTourStep[] {
+  // For new files, create two steps: 1) create empty file, 2) add content
+  if (isNewFile && addedLines.length > 0) {
+    const steps: CodeTourStep[] = [];
+    
+    // Step 1: Create empty file
+    steps.push({
+      description: `Create an empty file:\n\n>> echo > ${fileName}`,
+      title: `Create ${fileName}`,
+    });
+    
+    // Step 2: Add content to the file
+    const language = getLanguageFromFileName(fileName);
+    steps.push({
+      file: fileName,
+      line: 1,
+      description: `Add the following content:\n\n\`\`\`${language}\n` + addedLines.join('\n') + '\n```',
+      title: `Add content to ${fileName}`,
+    });
+    
+    return steps;
+  }
+  
+  // For non-new files or new files without content
   const description = generateStepDescription(addedLines, deletedLines, fileName, isNewFile);
   const step: CodeTourStep = {
     description,
   };
 
-  // For new files, don't set file/line, let the description guide the user
+  // For new files without content (shouldn't normally happen)
   if (isNewFile) {
-    // Don't set file or line for new files - user will create it via shell command
     step.title = `Create ${fileName}`;
   } else {
     step.file = fileName;
@@ -196,7 +218,7 @@ function createStep(
     }
   }
 
-  return step;
+  return [step];
 }
 
 function generateStepDescription(

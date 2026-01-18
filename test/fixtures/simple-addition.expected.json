@@ -3,8 +3,14 @@
   "description": "Test case for adding a new file",
   "steps": [
     {
-      "description": "Create a new file:\n\n>> touch example.js\n\nThen add the following content:\n\n```javascript\nfunction hello() {\n  console.log(\"Hello, world!\");\n}\n\nhello();\n```",
+      "description": "Create an empty file:\n\n>> echo > example.js",
       "title": "Create example.js"
+    },
+    {
+      "file": "example.js",
+      "line": 1,
+      "description": "Add the following content:\n\n```javascript\nfunction hello() {\n  console.log(\"Hello, world!\");\n}\n\nhello();\n```",
+      "title": "Add content to example.js"
     }
   ]
 }
