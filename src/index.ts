@@ -54,7 +54,7 @@ async function generateCodeTour(
     if (line.startsWith('diff --git')) {
       // Save previous file's changes
       if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
-        const description = generateStepDescription(addedLines, deletedLines);
+        const description = generateStepDescription(addedLines, deletedLines, currentFile);
         steps.push({
           file: currentFile,
           line: changeStartLine > 0 ? changeStartLine : 1,
@@ -78,7 +78,7 @@ async function generateCodeTour(
     if (line.startsWith('@@')) {
       // Save previous hunk's changes if any
       if (addedLines.length > 0 || deletedLines.length > 0) {
-        const description = generateStepDescription(addedLines, deletedLines);
+        const description = generateStepDescription(addedLines, deletedLines, currentFile);
         steps.push({
           file: currentFile,
           line: changeStartLine > 0 ? changeStartLine : 1,
@@ -88,7 +88,7 @@ async function generateCodeTour(
         deletedLines = [];
       }
 
-      const match = line.match(/@@ -(\d+),?\d* \+(\d+),?\d* @@/);
+      const match = line.match(/@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
       if (match) {
         currentLine = parseInt(match[2], 10);
       }
@@ -114,7 +114,7 @@ async function generateCodeTour(
       } else if (!line.startsWith('\\')) {
         // Context line, save current changes if any
         if (addedLines.length > 0 || deletedLines.length > 0) {
-          const description = generateStepDescription(addedLines, deletedLines);
+          const description = generateStepDescription(addedLines, deletedLines, currentFile);
           steps.push({
             file: currentFile,
             line: changeStartLine > 0 ? changeStartLine : currentLine,
@@ -131,7 +131,7 @@ async function generateCodeTour(
 
   // Save last file's changes
   if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
-    const description = generateStepDescription(addedLines, deletedLines);
+    const description = generateStepDescription(addedLines, deletedLines, currentFile);
     steps.push({
       file: currentFile,
       line: changeStartLine > 0 ? changeStartLine : 1,
@@ -143,8 +143,8 @@ async function generateCodeTour(
   const fromCommitLog = await git.log([fromCommit, '-1']);
   const toCommitLog = await git.log([toCommit, '-1']);
 
-  const fromHash = fromCommitLog.latest?.hash.substring(0, 7) || fromCommit;
-  const toHash = toCommitLog.latest?.hash.substring(0, 7) || toCommit;
+  const fromHash = fromCommitLog.latest?.hash?.substring(0, 7) || fromCommit;
+  const toHash = toCommitLog.latest?.hash?.substring(0, 7) || toCommit;
 
   const tour: CodeTour = {
     title: `Changes from ${fromHash} to ${toHash}`,
@@ -155,18 +155,66 @@ async function generateCodeTour(
   return tour;
 }
 
-function generateStepDescription(addedLines: string[], deletedLines: string[]): string {
+function generateStepDescription(addedLines: string[], deletedLines: string[], fileName: string): string {
   let description = '';
+  const language = getLanguageFromFileName(fileName);
 
   if (deletedLines.length > 0) {
-    description += '**Removed:**\n```\n' + deletedLines.join('\n') + '\n```\n\n';
+    description += `**Removed:**\n\`\`\`${language}\n` + deletedLines.join('\n') + '\n```\n\n';
   }
 
   if (addedLines.length > 0) {
-    description += '**Added:**\n```\n' + addedLines.join('\n') + '\n```\n';
+    description += `**Added:**\n\`\`\`${language}\n` + addedLines.join('\n') + '\n```\n';
   }
 
   return description.trim();
+}
+
+function getLanguageFromFileName(fileName: string): string {
+  const ext = path.extname(fileName).toLowerCase();
+  const languageMap: { [key: string]: string } = {
+    '.js': 'javascript',
+    '.jsx': 'jsx',
+    '.ts': 'typescript',
+    '.tsx': 'tsx',
+    '.py': 'python',
+    '.rb': 'ruby',
+    '.java': 'java',
+    '.c': 'c',
+    '.cpp': 'cpp',
+    '.cc': 'cpp',
+    '.cxx': 'cpp',
+    '.cs': 'csharp',
+    '.php': 'php',
+    '.go': 'go',
+    '.rs': 'rust',
+    '.swift': 'swift',
+    '.kt': 'kotlin',
+    '.scala': 'scala',
+    '.sh': 'bash',
+    '.bash': 'bash',
+    '.zsh': 'bash',
+    '.fish': 'fish',
+    '.ps1': 'powershell',
+    '.r': 'r',
+    '.R': 'r',
+    '.sql': 'sql',
+    '.html': 'html',
+    '.htm': 'html',
+    '.xml': 'xml',
+    '.css': 'css',
+    '.scss': 'scss',
+    '.sass': 'sass',
+    '.less': 'less',
+    '.json': 'json',
+    '.yaml': 'yaml',
+    '.yml': 'yaml',
+    '.toml': 'toml',
+    '.md': 'markdown',
+    '.txt': 'text',
+  };
+  
+  return languageMap[ext] || '';
 }
 
 async function main() {
