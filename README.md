@@ -55,6 +55,15 @@ node dist/index.js abc123 def456 -r /path/to/repo
 node dist/index.js main develop
 ```
 
+### 実例 / Real Example
+
+```bash
+# Example: Generate a tour for Python code changes
+node dist/index.js HEAD~1 HEAD -o .tours/latest-changes.tour
+```
+
+The generated tour file can be opened with the CodeTour extension in VS Code.
+
 ## 出力形式 / Output Format
 
 出力は CodeTour JSON 形式です。各ステップには以下の情報が含まれます:
@@ -69,11 +78,32 @@ The output is in CodeTour JSON format. Each step contains the following informat
     {
       "file": "path/to/file.js",
       "line": 42,
-      "description": "**Added:**\n```\ncode here\n```"
+      "description": "**Added:**\n```javascript\ncode here\n```"
     }
   ]
 }
 ```
+
+### サポートされている言語 / Supported Languages
+
+コードブロックは自動的にファイル拡張子から言語を検出し、適切なシンタックスハイライトを適用します:
+
+Code blocks automatically detect the language from file extensions and apply appropriate syntax highlighting:
+
+- JavaScript/TypeScript (.js, .jsx, .ts, .tsx)
+- Python (.py)
+- Java (.java)
+- C/C++ (.c, .cpp, .cc, .cxx)
+- C# (.cs)
+- Go (.go)
+- Rust (.rs)
+- Ruby (.rb)
+- PHP (.php)
+- Shell scripts (.sh, .bash)
+- HTML/CSS (.html, .css)
+- JSON/YAML (.json, .yaml)
+- Markdown (.md)
+- And many more...
 
 ## CodeTourについて / About CodeTour
 
