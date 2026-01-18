@@ -4,8 +4,7 @@
   "steps": [
     {
       "file": "src/utils.py",
-      "line": 1,
-      "description": "**Replace this code:**\n\n```python\ndef add(a, b):\n    return a + b\n```\n\n**With:**\n\n```python\ndef add(a, b, c=0):\n    \"\"\"Add two or three numbers together.\"\"\"\n    return a + b + c\n```",
+      "description": "Replace with:\n\n```python\ndef add(a, b, c=0):\n    \"\"\"Add two or three numbers together.\"\"\"\n    return a + b + c\n```",
       "selection": {
         "start": {
           "line": 1,
@@ -19,8 +18,7 @@
     },
     {
       "file": "src/utils.py",
-      "line": 8,
-      "description": "**Replace this code:**\n\n```python\ndef multiply(a, b):\n    return a * b\n```\n\n**With:**\n\n```python\ndef multiply(*args):\n    \"\"\"Multiply any number of arguments.\"\"\"\n    result = 1\n    for num in args:\n        result *= num\n    return result\n```",
+      "description": "Replace with:\n\n```python\ndef multiply(*args):\n    \"\"\"Multiply any number of arguments.\"\"\"\n    result = 1\n    for num in args:\n        result *= num\n    return result\n```",
       "selection": {
         "start": {
           "line": 8,

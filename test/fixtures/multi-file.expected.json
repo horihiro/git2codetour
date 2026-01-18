@@ -4,8 +4,7 @@
   "steps": [
     {
       "file": "README.md",
-      "line": 3,
-      "description": "**Replace this code:**\n\n```markdown\nThis is a simple project.\n```\n\n**With:**\n\n```markdown\nThis is an amazing project with lots of features!\n\nCheck out the documentation for more details.\n```",
+      "description": "Replace with:\n\n```markdown\nThis is an amazing project with lots of features!\n\nCheck out the documentation for more details.\n```",
       "selection": {
         "start": {
           "line": 3,
@@ -20,12 +19,11 @@
     {
       "file": "src/main.js",
       "line": 3,
-      "description": "**Add:**\n\n```javascript\n// Start the server\n```"
+      "description": "Add:\n\n```javascript\n// Start the server\n```"
     },
     {
       "file": "src/main.js",
-      "line": 5,
-      "description": "**Replace this code:**\n\n```javascript\napp.listen(PORT);\n```\n\n**With:**\n\n```javascript\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n```",
+      "description": "Replace with:\n\n```javascript\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n```",
       "selection": {
         "start": {
           "line": 5,

@@ -4,8 +4,7 @@
   "steps": [
     {
       "file": "app.js",
-      "line": 2,
-      "description": "**Replace this code:**\n\n```javascript\n  console.log(\"Hello, \" + name);\n```\n\n**With:**\n\n```javascript\n  console.log(`Hello, ${name}!`);\n```",
+      "description": "Replace with:\n\n```javascript\n  console.log(`Hello, ${name}!`);\n```",
       "selection": {
         "start": {
           "line": 2,

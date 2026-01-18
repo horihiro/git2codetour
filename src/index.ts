@@ -175,7 +175,6 @@ function createStep(
     step.title = `Create ${fileName}`;
   } else {
     step.file = fileName;
-    step.line = lineNumber;
 
     // Add selection for code replacements (when there are deletions)
     if (deletedLines.length > 0) {
@@ -190,6 +189,10 @@ function createStep(
           character: deletedLines[deletedLines.length - 1].length,
         },
       };
+      // When using selection, line should not be set
+    } else {
+      // Only set line when there's no selection
+      step.line = lineNumber;
     }
   }
 
@@ -216,18 +219,17 @@ function generateStepDescription(
     return description.trim();
   }
 
-  // For modifications/deletions, show removed and added code
-  if (deletedLines.length > 0) {
-    description += `**Replace this code:**\n\n`;
-    description += `\`\`\`${language}\n` + deletedLines.join('\n') + '\n```\n\n';
-  }
-
-  if (addedLines.length > 0) {
-    if (deletedLines.length > 0) {
-      description += `**With:**\n\n`;
-    } else {
-      description += `**Add:**\n\n`;
-    }
+  // For code replacements with selection, only show the new code
+  // (the selection will highlight the old code)
+  if (deletedLines.length > 0 && addedLines.length > 0) {
+    description += `Replace with:\n\n`;
+    description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
+  } else if (deletedLines.length > 0) {
+    // Only deletions (no additions) - show what's being removed
+    description += `Remove this code (selected above)`;
+  } else if (addedLines.length > 0) {
+    // Only additions
+    description += `Add:\n\n`;
     description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
   }
 
