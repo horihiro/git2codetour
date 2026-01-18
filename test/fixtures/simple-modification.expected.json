@@ -5,7 +5,17 @@
     {
       "file": "app.js",
       "line": 2,
-      "description": "**Removed:**\n```javascript\n  console.log(\"Hello, \" + name);\n```\n\n**Added:**\n```javascript\n  console.log(`Hello, ${name}!`);\n```"
+      "description": "**Replace this code:**\n\n```javascript\n  console.log(\"Hello, \" + name);\n```\n\n**With:**\n\n```javascript\n  console.log(`Hello, ${name}!`);\n```",
+      "selection": {
+        "start": {
+          "line": 2,
+          "character": 0
+        },
+        "end": {
+          "line": 2,
+          "character": 33
+        }
+      }
     }
   ]
 }
