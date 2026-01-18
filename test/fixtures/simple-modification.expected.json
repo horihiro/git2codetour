@@ -8,11 +8,11 @@
       "selection": {
         "start": {
           "line": 2,
-          "character": 0
+          "character": 1
         },
         "end": {
           "line": 2,
-          "character": 32
+          "character": 33
         }
       }
     }

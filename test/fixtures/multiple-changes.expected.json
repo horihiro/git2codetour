@@ -8,11 +8,11 @@
       "selection": {
         "start": {
           "line": 1,
-          "character": 0
+          "character": 1
         },
         "end": {
           "line": 2,
-          "character": 16
+          "character": 17
         }
       }
     },
@@ -22,11 +22,11 @@
       "selection": {
         "start": {
           "line": 8,
-          "character": 0
+          "character": 1
         },
         "end": {
           "line": 9,
-          "character": 16
+          "character": 17
         }
       }
     }

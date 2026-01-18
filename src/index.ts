@@ -183,11 +183,11 @@ function createStep(
       step.selection = {
         start: {
           line: lineNumber,
-          character: 0,
+          character: 1,
         },
         end: {
           line: endLine,
-          character: deletedLines[deletedLines.length - 1].length,
+          character: deletedLines[deletedLines.length - 1].length + 1,
         },
       };
     } else {
