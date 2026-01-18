@@ -176,7 +176,8 @@ function createStep(
   } else {
     step.file = fileName;
 
-    // Add selection for code replacements (when there are deletions)
+    // When there are deletions, add selection to highlight the old code
+    // When using selection, don't set line property
     if (deletedLines.length > 0) {
       const endLine = lineNumber + deletedLines.length - 1;
       step.selection = {
@@ -189,9 +190,8 @@ function createStep(
           character: deletedLines[deletedLines.length - 1].length,
         },
       };
-      // When using selection, line should not be set
     } else {
-      // Only set line when there's no selection
+      // Only set line when there's no selection (pure additions)
       step.line = lineNumber;
     }
   }
@@ -225,8 +225,8 @@ function generateStepDescription(
     description += `Replace with:\n\n`;
     description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
   } else if (deletedLines.length > 0) {
-    // Only deletions (no additions) - show what's being removed
-    description += `Remove this code (selected above)`;
+    // Only deletions (no additions) - the selection shows what's being removed
+    description += `Remove the selected code`;
   } else if (addedLines.length > 0) {
     // Only additions
     description += `Add:\n\n`;
