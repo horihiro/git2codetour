@@ -1,4 +1,6 @@
 # git2codetour
+![NPM Version](https://img.shields.io/npm/v/%40horihiro%2Fgit2codetour)
+![NPM Downloads](https://img.shields.io/npm/dy/%40horihiro%2Fgit2codetour)
 
 A command-line tool that analyzes commit logs recorded in a target Git local repository and outputs the differences between two specified commits in CodeTour format.
 
