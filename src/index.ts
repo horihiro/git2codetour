@@ -244,7 +244,7 @@ function generateStepDescription(
   // For code replacements with selection, only show the new code
   // (the selection will highlight the old code)
   if (deletedLines.length > 0 && addedLines.length > 0) {
-    description += `Replace with:\n\n`;
+    description += `Replace with:\n\n----\n\n`;
     description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
   } else if (deletedLines.length > 0) {
     // Only deletions (no additions) - the selection shows what's being removed
@@ -300,9 +300,10 @@ function getLanguageFromFileName(fileName: string): string {
     '.toml': 'toml',
     '.md': 'markdown',
     '.txt': 'text',
+    '.bicep': 'bicep',
   };
   
-  return languageMap[ext] || '';
+  return languageMap[ext] || 'text';
 }
 
 async function main() {
