@@ -170,7 +170,7 @@ function createSteps(
     
     // Step 1: Create empty file
     steps.push({
-      description: `Create an empty file:\n\nFor Linux/Mac:\n>> touch ${fileName}\n\nFor Windows: >> type nul > ${fileName}`,
+      description: `Create an empty file:\n\nFor Linux/Mac:\n>> touch ${fileName}\n\nFor Windows:\n>> type nul > ${fileName}`,
       title: `Create ${fileName}`,
     });
     
