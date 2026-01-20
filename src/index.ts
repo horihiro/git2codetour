@@ -252,7 +252,7 @@ function generateStepDescription(
   } else if (addedLines.length > 0) {
     // Only additions
     description += `Add:\n\n`;
-    description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
+    description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n\n```';
   }
 
   return description.trim();
