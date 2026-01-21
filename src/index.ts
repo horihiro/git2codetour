@@ -4,7 +4,6 @@ import { Command } from 'commander';
 import { simpleGit, SimpleGit } from 'simple-git';
 import * as path from 'path';
 import * as fs from 'fs';
-import { minimatch } from 'minimatch';
 
 interface CodeTourStep {
   file?: string;
@@ -30,18 +29,13 @@ interface CodeTour {
   steps: CodeTourStep[];
 }
 
-function matchesFilterPatterns(fileName: string, patterns?: string[]): boolean {
-  if (!patterns || patterns.length === 0) {
-    return true;
-  }
-  return patterns.some((pattern) => minimatch(fileName, pattern));
-}
-
 async function generateCodeTour(
   repoPath: string,
   fromCommit: string,
   toCommit: string,
-  filterPatterns?: string[]
+  title?: string,
+  description?: string,
+  filterPatterns?: string[],
 ): Promise<CodeTour> {
   const git: SimpleGit = simpleGit(repoPath);
 
@@ -54,7 +48,7 @@ async function generateCodeTour(
   }
 
   // Get the diff between commits
-  const diff = await git.diff([fromCommit, toCommit]);
+  const diff = await git.diff([fromCommit, toCommit, ...filterPatterns || []]);
 
   const steps: CodeTourStep[] = [];
 
@@ -74,7 +68,7 @@ async function generateCodeTour(
     // Match file header
     if (line.startsWith('diff --git')) {
       // Save previous file's changes if it matches the filter
-      if (currentFile && (addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
+      if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
         const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
         steps.push(...newSteps);
       }
@@ -100,7 +94,7 @@ async function generateCodeTour(
     // Match hunk header
     if (line.startsWith('@@')) {
       // Save previous hunk's changes if any and file matches filter
-      if ((addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
+      if ((addedLines.length > 0 || deletedLines.length > 0)) {
         const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
         steps.push(...newSteps);
         addedLines = [];
@@ -132,7 +126,7 @@ async function generateCodeTour(
         // Don't increment currentLine for deletions
       } else if (!line.startsWith('\\')) {
         // Context line, save current changes if any and file matches filter
-        if ((addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
+        if ((addedLines.length > 0 || deletedLines.length > 0)) {
           const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : currentLine, isNewFile);
           steps.push(...newSteps);
           addedLines = [];
@@ -145,7 +139,7 @@ async function generateCodeTour(
   }
 
   // Save last file's changes if it matches the filter
-  if (currentFile && (addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
+  if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
     const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : 1, isNewFile);
     steps.push(...newSteps);
   }
@@ -158,8 +152,8 @@ async function generateCodeTour(
   const toHash = toCommitLog.latest?.hash?.substring(0, 7) || toCommit;
 
   const tour: CodeTour = {
-    title: `Changes from ${fromHash} to ${toHash}`,
-    description: `Diff between commits:\n- From: ${fromHash} - ${fromCommitLog.latest?.message}\n- To: ${toHash} - ${toCommitLog.latest?.message}`,
+    title: title || `Changes from ${fromHash} to ${toHash}`,
+    description: description || `Diff between commits:\n- From: ${fromHash} - ${fromCommitLog.latest?.message}\n- To: ${toHash} - ${toCommitLog.latest?.message}`,
     steps,
   };
 
@@ -326,6 +320,8 @@ async function main() {
     .argument('<to-commit>', 'Ending commit reference')
     .option('-r, --repo <path>', 'Path to git repository', process.cwd())
     .option('-o, --output <file>', 'Output file path (default: stdout)')
+    .option('-t, --title <title>', 'Title for the CodeTour')
+    .option('-d, --description <description>', 'Description for the CodeTour')
     .option('-f, --filter <pattern...>', 'Filter files by glob pattern')
     .action(async (fromCommit: string, toCommit: string, options) => {
       try {
@@ -337,7 +333,7 @@ async function main() {
           process.exit(1);
         }
 
-        const tour = await generateCodeTour(repoPath, fromCommit, toCommit, options.filter);
+        const tour = await generateCodeTour(repoPath, fromCommit, toCommit, options.title, options.description, options.filter);
         const output = JSON.stringify(tour, null, 2);
 
         if (options.output) {
