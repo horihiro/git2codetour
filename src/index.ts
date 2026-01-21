@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { simpleGit, SimpleGit } from 'simple-git';
 import * as path from 'path';
 import * as fs from 'fs';
+import { minimatch } from 'minimatch';
 
 interface CodeTourStep {
   file?: string;
@@ -29,10 +30,18 @@ interface CodeTour {
   steps: CodeTourStep[];
 }
 
+function matchesFilterPatterns(fileName: string, patterns?: string[]): boolean {
+  if (!patterns || patterns.length === 0) {
+    return true;
+  }
+  return patterns.some((pattern) => minimatch(fileName, pattern));
+}
+
 async function generateCodeTour(
   repoPath: string,
   fromCommit: string,
-  toCommit: string
+  toCommit: string,
+  filterPatterns?: string[]
 ): Promise<CodeTour> {
   const git: SimpleGit = simpleGit(repoPath);
 
@@ -64,8 +73,8 @@ async function generateCodeTour(
 
     // Match file header
     if (line.startsWith('diff --git')) {
-      // Save previous file's changes
-      if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
+      // Save previous file's changes if it matches the filter
+      if (currentFile && (addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
         const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
         steps.push(...newSteps);
       }
@@ -90,8 +99,8 @@ async function generateCodeTour(
 
     // Match hunk header
     if (line.startsWith('@@')) {
-      // Save previous hunk's changes if any
-      if (addedLines.length > 0 || deletedLines.length > 0) {
+      // Save previous hunk's changes if any and file matches filter
+      if ((addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
         const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine, isNewFile);
         steps.push(...newSteps);
         addedLines = [];
@@ -122,8 +131,8 @@ async function generateCodeTour(
         deletedLines.push(line.substring(1));
         // Don't increment currentLine for deletions
       } else if (!line.startsWith('\\')) {
-        // Context line, save current changes if any
-        if (addedLines.length > 0 || deletedLines.length > 0) {
+        // Context line, save current changes if any and file matches filter
+        if ((addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
           const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : currentLine, isNewFile);
           steps.push(...newSteps);
           addedLines = [];
@@ -135,8 +144,8 @@ async function generateCodeTour(
     }
   }
 
-  // Save last file's changes
-  if (currentFile && (addedLines.length > 0 || deletedLines.length > 0)) {
+  // Save last file's changes if it matches the filter
+  if (currentFile && (addedLines.length > 0 || deletedLines.length > 0) && matchesFilterPatterns(currentFile, filterPatterns)) {
     const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : 1, isNewFile);
     steps.push(...newSteps);
   }
@@ -317,6 +326,7 @@ async function main() {
     .argument('<to-commit>', 'Ending commit reference')
     .option('-r, --repo <path>', 'Path to git repository', process.cwd())
     .option('-o, --output <file>', 'Output file path (default: stdout)')
+    .option('-f, --filter <pattern...>', 'Filter files by glob pattern')
     .action(async (fromCommit: string, toCommit: string, options) => {
       try {
         const repoPath = path.resolve(options.repo);
@@ -327,7 +337,7 @@ async function main() {
           process.exit(1);
         }
 
-        const tour = await generateCodeTour(repoPath, fromCommit, toCommit);
+        const tour = await generateCodeTour(repoPath, fromCommit, toCommit, options.filter);
         const output = JSON.stringify(tour, null, 2);
 
         if (options.output) {
