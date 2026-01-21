@@ -26,6 +26,7 @@ node dist/index.js <from-commit> <to-commit> [options]
 ### Options
 
 - `-r, --repo <path>`: Path to git repository (default: current directory)
+- `-f, --filter <pattern1> <pattern2> ... <patternN>`: Only include files matching glob patterns (e.g., `src/**/*.ts` `*.md`)
 - `-o, --output <file>`: Output file path (default: stdout)
 - `-V, --version`: Display version
 - `-h, --help`: Display help
@@ -93,6 +94,7 @@ Code blocks automatically detect the language from file extensions and apply app
 - HTML/CSS (.html, .css)
 - JSON/YAML (.json, .yaml)
 - Markdown (.md)
+- Bicep (.bicep)
 - And many more...
 
 ## About CodeTour
