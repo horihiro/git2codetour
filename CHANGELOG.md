@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.5] - 2026-01-21
 
 ### Added
-- Implement `--filter` option to process only files matching specified glob patterns
+- Implement following options
+  - `--title`: Title for the CodeTour
+  - `--description`: Description for the CodeTour
+  - `--filter`: To process only files matching specified glob patterns
 
 ### Fixed
 - Fix formatting in generateStepDescription: add newline before closing code block

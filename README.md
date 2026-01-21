@@ -26,6 +26,8 @@ node dist/index.js <from-commit> <to-commit> [options]
 ### Options
 
 - `-r, --repo <path>`: Path to git repository (default: current directory)
+- `-t, --title <title>`: Title for the CodeTour
+- `-d, --description <description>`: Description for the CodeTour
 - `-f, --filter <pattern1> <pattern2> ... <patternN>`: Only include files matching glob patterns (e.g., `src/**/*.ts` `*.md`)
 - `-o, --output <file>`: Output file path (default: stdout)
 - `-V, --version`: Display version
