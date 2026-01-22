@@ -24,6 +24,7 @@ interface CodeTourStep {
 }
 
 interface CodeTour {
+  '$schema': string;
   title: string;
   description: string;
   steps: CodeTourStep[];
@@ -31,14 +32,52 @@ interface CodeTour {
 
 async function generateCodeTour(
   repoPath: string,
-  fromCommit: string,
-  toCommit: string,
+  commits: string[],
   title?: string,
   description?: string,
   filterPatterns?: string[],
 ): Promise<CodeTour> {
   const git: SimpleGit = simpleGit(repoPath);
+  if (commits.length < 2) {
+    throw new Error('Please provide at least two commit references to generate a diff.');
+  }
+  const steps = await commits.reduce<Promise<CodeTourStep[]>>(async (accP, commit, index) => {
+    const acc = await accP;
+    if (index === commits.length - 1) {
+      return acc;
+    }
+    const newSteps = await generateStepBetweenTwoCommits(git, commit, commits[index + 1], filterPatterns);
+    acc.push(...newSteps);
+    return acc;
+  }, Promise.resolve([]));
 
+
+  const fromCommit = commits[0];
+  const toCommit = commits[commits.length - 1];
+  // Get commit messages for context
+  const fromCommitLog = await git.log([fromCommit, '-1']);
+  const toCommitLog = await git.log([toCommit, '-1']);
+
+  const fromHash = fromCommitLog.latest?.hash?.substring(0, 7) || fromCommit;
+  const toHash = toCommitLog.latest?.hash?.substring(0, 7) || toCommit;
+
+  const tour: CodeTour = {
+    '$schema': 'https://aka.ms/codetour-schema',
+    title: title || `Changes from ${fromHash} to ${toHash}`,
+    description: description || `Diff between commits:\n- From: ${fromHash} - ${fromCommitLog.latest?.message}\n- To: ${toHash} - ${toCommitLog.latest?.message}`,
+    steps,
+  };
+
+  return tour;
+}
+
+async function generateStepBetweenTwoCommits(
+  git: SimpleGit,
+  fromCommit: string,
+  toCommit: string,
+  filterPatterns?: string[],
+): Promise<CodeTourStep[]> {
+  
   // Verify commits exist
   try {
     await git.revparse([fromCommit]);
@@ -143,21 +182,7 @@ async function generateCodeTour(
     const newSteps = createSteps(addedLines, deletedLines, currentFile, changeStartLine > 0 ? changeStartLine : 1, isNewFile);
     steps.push(...newSteps);
   }
-
-  // Get commit messages for context
-  const fromCommitLog = await git.log([fromCommit, '-1']);
-  const toCommitLog = await git.log([toCommit, '-1']);
-
-  const fromHash = fromCommitLog.latest?.hash?.substring(0, 7) || fromCommit;
-  const toHash = toCommitLog.latest?.hash?.substring(0, 7) || toCommit;
-
-  const tour: CodeTour = {
-    title: title || `Changes from ${fromHash} to ${toHash}`,
-    description: description || `Diff between commits:\n- From: ${fromHash} - ${fromCommitLog.latest?.message}\n- To: ${toHash} - ${toCommitLog.latest?.message}`,
-    steps,
-  };
-
-  return tour;
+  return steps;
 }
 
 function createSteps(
@@ -316,14 +341,13 @@ async function main() {
     .name('git2codetour')
     .description('Generate CodeTour from git commit diff')
     .version('1.0.0')
-    .argument('<from-commit>', 'Starting commit reference')
-    .argument('<to-commit>', 'Ending commit reference')
+    .argument('<commits...>', 'Range of commits (e.g., from .. (intermediate) .. to commits)')
     .option('-r, --repo <path>', 'Path to git repository', process.cwd())
     .option('-o, --output <file>', 'Output file path (default: stdout)')
     .option('-t, --title <title>', 'Title for the CodeTour')
     .option('-d, --description <description>', 'Description for the CodeTour')
     .option('-f, --filter <pattern...>', 'Filter files by glob pattern')
-    .action(async (fromCommit: string, toCommit: string, options) => {
+    .action(async (commits: string[], options) => {
       try {
         const repoPath = path.resolve(options.repo);
 
@@ -333,7 +357,7 @@ async function main() {
           process.exit(1);
         }
 
-        const tour = await generateCodeTour(repoPath, fromCommit, toCommit, options.title, options.description, options.filter);
+        const tour = await generateCodeTour(repoPath, commits, options.title, options.description, options.filter);
         const output = JSON.stringify(tour, null, 2);
 
         if (options.output) {
