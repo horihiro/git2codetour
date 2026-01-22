@@ -15,13 +15,12 @@ or
 ```bash
 npm install
 npm run build
-node dist/index.js <from-commit> <to-commit> [options]
+node dist/index.js <commit1> <commit2> ... <commitN> [options]
 ```
 
 ### Arguments
 
-- `<from-commit>`:  Starting commit reference (SHA, branch name, tag name, etc.)
-- `<to-commit>`: Ending commit reference (SHA, branch name, tag name, etc.)
+- `<commit1> <commit2> ... <commitN>`: Two or more commit references (SHA, branch name, tag name, etc.) to generate a CodeTour showing the progression of changes
 
 ### Options
 
@@ -60,6 +59,14 @@ npx @horihiro/git2codetour main develop
 ```
 
 The generated tour file can be opened with the CodeTour extension in VS Code.
+
+### Specify three or more commits
+
+```bash
+npx @horihiro/git2codetour abc123 def456 ghi789 -o progression.tour
+```
+
+This generates a CodeTour showing the progression of changes from commit to commit (abc123 → def456, then def456 → ghi789).
 
 ## Output Format
 
