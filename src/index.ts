@@ -198,7 +198,13 @@ function createSteps(
     
     // Step 1: Create empty file
     steps.push({
-      description: `Create an empty file:\n\nFor Linux/Mac:\n>> touch ${fileName}\n\nFor Windows:\n>> cmd.exe /c "type nul > ${fileName}"`,
+      description: `Create an empty file:
+      
+For Linux/Mac:
+>> touch ${fileName}
+
+For Windows:
+>> cmd.exe /c "type nul > ${fileName}"`,
       title: `Create ${fileName}`,
     });
     
@@ -207,7 +213,11 @@ function createSteps(
     steps.push({
       file: fileName,
       line: 1,
-      description: `Add the following content:\n\n\`\`\`${language}\n` + addedLines.join('\n') + '\n```',
+      description: `Add the following content:
+
+\`\`\`${language}
+${addedLines.join('\n')}
+\`\`\``,
       title: `Add content to ${fileName}`,
     });
     
@@ -260,8 +270,11 @@ function generateStepDescription(
 
   // For new files, use shell command to create and code block to insert
   if (isNewFile) {
-    description += `Create a new file:\n\n`;
-    description += `>> touch ${fileName}\n\n`;
+    description = `Create a new file:
+
+>> touch ${fileName}
+
+`;
     if (addedLines.length > 0) {
       description += `Then add the following content:\n\n`;
       description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
