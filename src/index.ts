@@ -359,8 +359,15 @@ async function main() {
     .option('-t, --title <title>', 'Title for the CodeTour')
     .option('-d, --description <description>', 'Description for the CodeTour')
     .option('-f, --filter <pattern...>', 'Filter files by glob pattern')
+    .option('-a, --append', 'Append steps to existing tour file')
     .action(async (commits: string[], options) => {
       try {
+        // Validate --append option requires --output
+        if (options.append && !options.output) {
+          console.error('Error: --append(-a) option requires --output(-o) option');
+          process.exit(1);
+        }
+
         const repoPath = path.resolve(options.repo);
 
         // Verify repository exists
@@ -370,7 +377,17 @@ async function main() {
         }
 
         const tour = await generateCodeTour(repoPath, commits, options.title, options.description, options.filter);
-        const output = JSON.stringify(tour, null, 2);
+
+        let finalTour = tour;
+        if (options.append && options.output && fs.existsSync(options.output)) {
+          // 既存ファイルを読み込んで steps を結合
+          const existing = JSON.parse(fs.readFileSync(options.output, 'utf-8'));
+          finalTour = {
+            ...existing,
+            steps: [...(existing.steps || []), ...(tour.steps || [])],
+          };
+        }
+        const output = JSON.stringify(finalTour, null, 2);
 
         if (options.output) {
           const outputPath = path.resolve(options.output);
