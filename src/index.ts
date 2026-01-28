@@ -198,7 +198,7 @@ function createSteps(
     
     // Step 1: Create empty file
     steps.push({
-      description: `Create an empty file:
+      description: `Create an empty file by the following command (click to execute):
       
 For Linux/Mac:
 >> touch ${fileName}
@@ -271,7 +271,7 @@ function generateStepDescription(
   // For new files without content (addedLines.length === 0)
   // Note: Cases with addedLines.length > 0 are handled in createSteps before calling this function
   if (isNewFile) {
-    return `Create an empty file:
+    return `Create an empty file by the following command (click to execute):
       
 For Linux/Mac:
 >> touch ${fileName}
