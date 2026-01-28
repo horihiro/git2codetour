@@ -353,7 +353,7 @@ async function main() {
   program
     .name('git2codetour')
     .description('Generate CodeTour from git commit diff')
-    .version('1.0.0')
+    .version(require('./../package.json').version)
     .argument('<commits...>', 'Range of commits (e.g., from .. (intermediate) .. to commits)')
     .option('-r, --repo <path>', 'Path to git repository', process.cwd())
     .option('-o, --output <file>', 'Output file path (default: stdout)')
