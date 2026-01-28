@@ -268,35 +268,41 @@ function generateStepDescription(
   let description = '';
   const language = getLanguageFromFileName(fileName);
 
-  // For new files, use shell command to create and code block to insert
+  // For new files without content (addedLines.length === 0)
+  // Note: Cases with addedLines.length > 0 are handled in createSteps before calling this function
   if (isNewFile) {
-    description = `Create a new file:
-
+    return `Create an empty file:
+      
+For Linux/Mac:
 >> touch ${fileName}
 
-`;
-    if (addedLines.length > 0) {
-      description += `Then add the following content:\n\n`;
-      description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
-    }
-    return description.trim();
+For Windows:
+>> cmd.exe /c "type nul > ${fileName}"`;
   }
 
   // For code replacements with selection, only show the new code
   // (the selection will highlight the old code)
   if (deletedLines.length > 0 && addedLines.length > 0) {
-    description += `Replace with:\n\n----\n\n`;
-    description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n```';
+    description = `Replace with:
+
+----
+
+\`\`\`${language}
+${addedLines.join('\n')}
+\`\`\``;
   } else if (deletedLines.length > 0) {
     // Only deletions (no additions) - the selection shows what's being removed
-    description += `Remove the selected code`;
+    description = `Remove the selected code`;
   } else if (addedLines.length > 0) {
     // Only additions
-    description += `Add:\n\n`;
-    description += `\`\`\`${language}\n` + addedLines.join('\n') + '\n\n```';
-  }
+    description = `Add:
 
-  return description.trim();
+\`\`\`${language}
+${addedLines.join('\n')}
+
+\`\`\``;
+  }
+  return description;
 }
 
 function getLanguageFromFileName(fileName: string): string {
