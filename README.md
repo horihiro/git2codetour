@@ -29,6 +29,7 @@ node dist/index.js <commit1> <commit2> ... <commitN> [options]
 - `-d, --description <description>`: Description for the CodeTour
 - `-f, --filter <pattern1> <pattern2> ... <patternN>`: Only include files matching glob patterns (e.g., `src/**/*.ts` `*.md`)
 - `-o, --output <file>`: Output file path (default: stdout)
+- `-a, --append`: Append steps to existing tour file (requires `-o, --output` option)
 - `-V, --version`: Display version
 - `-h, --help`: Display help
 
@@ -67,6 +68,15 @@ npx @horihiro/git2codetour abc123 def456 ghi789 -o progression.tour
 ```
 
 This generates a CodeTour showing the progression of changes from commit to commit (abc123 → def456, then def456 → ghi789).
+
+### Append steps to existing tour file
+
+```bash
+npx @horihiro/git2codetour abc123 def456 -o changes.tour
+npx @horihiro/git2codetour def456 ghi789 --append -o changes.tour
+```
+
+This appends the steps from def456 to ghi789 to the existing `changes.tour` file.
 
 ## Output Format
 
