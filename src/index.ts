@@ -193,7 +193,7 @@ function createSteps(
   isNewFile: boolean
 ): CodeTourStep[] {
   // For new files, create two steps: 1) create empty file, 2) add content
-  if (isNewFile && addedLines.length > 0) {
+  if (isNewFile) {
     const steps: CodeTourStep[] = [];
     
     // Step 1: Create empty file
@@ -208,12 +208,16 @@ For Windows:
       title: `Create ${fileName}`,
     });
     
+    if (addedLines.length === 0) return steps;
+
     // Step 2: Add content to the file
     const language = getLanguageFromFileName(fileName);
     steps.push({
       file: fileName,
       line: 1,
       description: `Add the following content:
+
+----
 
 \`\`\`${language}
 ${addedLines.join('\n')}
@@ -225,7 +229,7 @@ ${addedLines.join('\n')}
   }
   
   // For non-new files or new files without content
-  const description = generateStepDescription(addedLines, deletedLines, fileName, isNewFile);
+  const description = generateStepDescription(addedLines, deletedLines, fileName);
   const step: CodeTourStep = {
     description,
   };
@@ -262,28 +266,15 @@ ${addedLines.join('\n')}
 function generateStepDescription(
   addedLines: string[],
   deletedLines: string[],
-  fileName: string,
-  isNewFile: boolean
+  fileName: string
 ): string {
   let description = '';
   const language = getLanguageFromFileName(fileName);
 
-  // For new files without content (addedLines.length === 0)
-  // Note: Cases with addedLines.length > 0 are handled in createSteps before calling this function
-  if (isNewFile) {
-    return `Create an empty file by the following command (click to execute):
-      
-For Linux/Mac:
->> touch ${fileName}
-
-For Windows:
->> cmd.exe /c "type nul > ${fileName}"`;
-  }
-
   // For code replacements with selection, only show the new code
   // (the selection will highlight the old code)
   if (deletedLines.length > 0 && addedLines.length > 0) {
-    description = `Replace with:
+    description = `Replace with the following content:
 
 ----
 
@@ -292,10 +283,12 @@ ${addedLines.join('\n')}
 \`\`\``;
   } else if (deletedLines.length > 0) {
     // Only deletions (no additions) - the selection shows what's being removed
-    description = `Remove the selected code`;
+    description = `Remove the selected content`;
   } else if (addedLines.length > 0) {
     // Only additions
-    description = `Add:
+    description = `Add the following content:
+
+----
 
 \`\`\`${language}
 ${addedLines.join('\n')}
