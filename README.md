@@ -73,10 +73,14 @@ This generates a CodeTour showing the progression of changes from commit to comm
 
 ```bash
 npx @horihiro/git2codetour abc123 def456 -o changes.tour
-npx @horihiro/git2codetour def456 ghi789 --append -o changes.tour
+npx @horihiro/git2codetour def456 ghi789 -a -o changes.tour
 ```
 
-This appends the steps from def456 to ghi789 to the existing `changes.tour` file.
+This appends the steps from def456 to ghi789 to the existing `changes.tour` file and the output is same as:
+
+```bash
+npx @horihiro/git2codetour abc123 def456 ghi789 -o changes.tour
+``
 
 ## Output Format
 
