@@ -80,7 +80,7 @@ This appends the steps from def456 to ghi789 to the existing `changes.tour` file
 
 ```bash
 npx @horihiro/git2codetour abc123 def456 ghi789 -o changes.tour
-``
+```
 
 ## Output Format
 
