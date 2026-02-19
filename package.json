@@ -1,6 +1,6 @@
 {
   "name": "@horihiro/git2codetour",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Command-line tool to generate CodeTour from git commit diffs",
   "main": "dist/index.js",
   "bin": {
