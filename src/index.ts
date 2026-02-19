@@ -242,22 +242,20 @@ ${addedLines.join('\n')}
 
     // When there are deletions, add selection to highlight the old code
     // When using selection, don't set line property
-    if (deletedLines.length > 0) {
-      const endLine = lineNumber + deletedLines.length - 1;
-      step.selection = {
-        start: {
-          line: lineNumber,
-          character: 1,
-        },
-        end: {
-          line: endLine,
-          character: deletedLines[deletedLines.length - 1].length + 1,
-        },
-      };
-    } else {
-      // Only set line when there's no selection (pure additions)
-      step.line = lineNumber;
-    }
+    const endLine = lineNumber + deletedLines.length - 1;
+    step.selection = {
+      start: {
+        line: lineNumber,
+        character: 1,
+      },
+      end: (deletedLines.length > 0) ? {
+        line: endLine,
+        character: deletedLines[deletedLines.length - 1].length + 1,
+      } : {
+        line: lineNumber,
+        character: 1,
+      },
+    };
   }
 
   return [step];
