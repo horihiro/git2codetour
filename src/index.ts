@@ -201,10 +201,10 @@ function createSteps(
       description: `Create an empty file by the following command (click to execute):
       
 For Linux/Mac:
->> touch ${fileName}
+>> touch ${fileName} && exit
 
 For Windows:
->> cmd.exe /c "type nul > ${fileName}"`,
+>> cmd.exe /c "type nul > ${fileName}" && exit`,
       title: `Create ${fileName}`,
     });
     
